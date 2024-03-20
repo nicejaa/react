@@ -4,26 +4,52 @@ import Card from "react-bootstrap/Card";
 import axios from "axios";
 export default function Products() {
   const [products, setProducts] = useState([]);
-
   const [carts, setCarts] = useState([]);
 
   const addToCart = (obj) => {
     const isFoundItem = carts.some((x) => x.id === obj.id);
-
     if (!isFoundItem) {
       setCarts([...carts, obj]);
     } else {
       alert("มีสินค้าในตะกร้าแล้ว");
     }
   };
-  const loadApi = async () => {
-    const res = await axios.get("https://dummyjson.com/products?limit=5");
 
-    setProducts(res.data.products);
+  const loadApi = async () => {
+    try {
+      const res = await axios.get("https://dummyjson.com/products?limit=5");
+      setProducts(res.data.products);
+    } catch (e) {
+      console.log(e);
+    }
   };
+
+  const checkoutCart = () => {
+    try {
+      carts.forEach(async (item) => {
+        const payload = {
+          title: item.title,
+        };
+
+        const res = await axios.post(
+          "https://dummyjson.com/products/add",
+          payload
+        );
+
+        if (res.status === 200) {
+          alert("สำเร็จ");
+          setCarts([]);
+        }
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   useEffect(() => {
     loadApi();
   }, []);
+
   return (
     <div>
       <div className="d-flex gap-1">
@@ -69,7 +95,7 @@ export default function Products() {
               <Card.Body>
                 {carts?.map((item) => {
                   return (
-                    <>
+                    <div key={item.id}>
                       <div className="d-flex w-full">
                         <div className="col-6">
                           <p>{item.title}</p>
@@ -79,11 +105,13 @@ export default function Products() {
                         </div>
                       </div>
                       <hr />
-                    </>
+                    </div>
                   );
                 })}
               </Card.Body>
-              <Button className="m-2">Checkout</Button>
+              <Button className="m-2" onClick={() => checkoutCart()}>
+                Checkout
+              </Button>
             </Card>
           </div>
         )}
