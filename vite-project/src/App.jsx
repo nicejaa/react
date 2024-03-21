@@ -23,4 +23,11 @@ function App() {
   );
 }
 
+// function App() {
+//   return <User name="As" />;
+// }
+// function User(props) {
+//   return <h1>Hello, {props.name}</h1>; // Hello, As!
+// }
+
 export default App;
